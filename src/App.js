@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 import "./App.css";
 
-const apiEndPoint = 'https://jsonplaceholder.typicode.com/posts';
+const apiEndpoint = 'https://jsonplaceholder.typicode.com/posts';
 
 class App extends Component {
   state = {
@@ -11,24 +11,46 @@ class App extends Component {
 
   async componentDidMount() {
     // pending state > resolved in case of success > rejected in case of failure
-    const { data: posts } = await axios.get(apiEndPoint);
+    const { data: posts } = await axios.get(apiEndpoint);
     this.setState({ posts });
   }
 
+  // Adding Data
   handleAdd = async () => {
     const obj = { title: 'a', body: 'b' };
-    const { data: post } = await axios.post(apiEndPoint, obj);
+    const { data: post } = await axios.post(apiEndpoint, obj);
 
     const posts = [post, ...this.state.posts];
     this.setState({ posts });
   };
 
-  handleUpdate = post => {
-    console.log("Update", post);
+  // Updating Data with put ou patch
+  handleUpdate = async post => {
+    post.title = "UPDATE";
+    await axios.put(apiEndpoint + '/' + post.id, post);
+
+    const posts = [...this.state.posts];
+    const index = posts.indexOf(post);
+    posts[index] = {...post};
+    this.setState({ posts });
   };
 
-  handleDelete = post => {
-    console.log("Delete", post);
+  // Deleting Data
+  handleDelete = async post => {
+    const originalPosts = this.state.posts;
+
+    const posts = this.state.posts.filter(p => p.id !== post.id);
+    this.setState({ posts });
+
+    try {
+      await axios.delete(apiEndpoint + '/' + post.id, post);
+    } catch (ex) {
+      alert('Something failed while trying to delete the post.')
+      this.setState({ posts: originalPosts });
+    }
+    
+
+    
   };
 
   render() {
