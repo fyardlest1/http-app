@@ -1,6 +1,8 @@
 import React, { Component } from "react";
+import { ToastContainer } from 'react-toastify';
 import httpService from './services/httpServices';
 import config from './config.json';
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 
@@ -43,7 +45,7 @@ class App extends Component {
     this.setState({ posts });
 
     try {
-      await httpService.delete(config.apiEndpoint + '/' + post.id, post);
+      await httpService.delete('s' + config.apiEndpoint + '/' + post.id, post);
     } catch (ex) {
       if (ex.response && ex.response.status === 404) {
         alert('This post has already been deleted.');
@@ -64,6 +66,7 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
+        <ToastContainer />
         <button className="btn btn-primary" onClick={this.handleAdd}>
           Add
         </button>
